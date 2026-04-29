@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="ru" class="h-full" style="scroll-behavior:smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>СММ_КАДР — Маркетинговое агентство</title>
+  
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#1a6cfa',
+            brandDark: '#0f4fd4',
+            brandLight: '#e8f0ff',
+            brandAccent: '#3b82f6',
+            surface: '#f7f9fc',
+            dark: '#0d1117',
+            cardBg: '#ffffff'
+          },
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body {
+      font-family: 'Manrope', sans-serif;
+      height: 100%;
+      overflow-x: hidden;
+    }
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .6s, transform .6s;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .review-track {
+      display: flex;
+      gap: 24px;
+      transition: transform .5s ease;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #1a6cfa;
+      transition: width .3s;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    .btn-primary {
+      background: #1a6cfa;
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 600;
+      transition: all .25s;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary:hover {
+      background: #0f4fd4;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(26,108,250,.3);
+    }
+    .btn-outline {
+      border: 2px solid #1a6cfa;
+      color: #1a6cfa;
+      border-radius: 12px;
+      padding: 12px 26px;
+      font-weight: 600;
+      transition: all .25s;
+      background: transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-outline:hover {
+      background: #1a6cfa;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    .card-hover {
+      transition: all .3s;
+    }
+    .card-hover:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(26,108,250,.12);
+    }
+    .popular-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg,#1a6cfa,#6366f1);
+      color: #fff;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0d1117;
+      color: #fff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 500;
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .4s;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .hero-graphic {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+    }
+  </style>
+</head>
+<body class="h-full bg-white text-dark font-sans">
+
+  <div id="app" class="w-full h-full overflow-auto">
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full bg-white/80 backdrop-blur-lg z-50 border-b border-gray-100">
+      <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="#hero" class="text-xl font-extrabold tracking-tight" style="color:#1a6cfa">СММ_КАДР</a>
+        
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+          <a href="#services" class="nav-link hover:text-brand">Услуги</a>
+          <a href="#packages" class="nav-link hover:text-brand">Пакеты</a>
+          <a href="#cases" class="nav-link hover:text-brand">Кейсы</a>
+          <a href="#reviews" class="nav-link hover:text-brand">Отзывы</a>
+          <a href="#contacts" class="nav-link hover:text-brand">Контакты</a>
+        </div>
+        
+        <a href="#form" class="btn-primary text-sm hidden md:inline-flex">Оставить заявку</a>
+        <button id="mobMenuBtn" class="md:hidden text-gray-700">
+          <i data-lucide="menu" style="width:28px;height:28px"></i>
+        </button>
+      </div>
+
+      <div id="mobMenu" class="hidden md:hidden bg-white border-t border-gray-100 px-6 pb-4">
+        <div class="flex flex-col gap-3 text-sm font-medium text-gray-600 pt-3">
+          <a href="#services" class="mob-nav py-2">Услуги</a>
+          <a href="#packages" class="mob-nav py-2">Пакеты</a>
+          <a href="#cases" class="mob-nav py-2">Кейсы</a>
+          <a href="#reviews" class="mob-nav py-2">Отзывы</a>
+          <a href="#contacts" class="mob-nav py-2">Контакты</a>
+          <a href="#form" class="btn-primary text-sm text-center mt-2">Оставить заявку</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="hero" class="w-full bg-gradient-to-br from-white via-brandLight to-white pt-32 pb-20 px-6">
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+        <div class="flex-1 fade-up">
+          <div class="inline-block bg-brand/10 text-brand text-sm font-semibold px-4 py-2 rounded-full mb-6">
+            🚀 Маркетинг нового поколения
+          </div>
+          <h1 id="heroTitle" class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6" style="color:#0d1117">
+            Комплексный маркетинг для роста вашего бренда
+          </h1>
+          <p id="heroSubtitle" class="text-lg md:text-xl text-gray-500 mb-8 max-w-lg">
+            Создаем контент, продвигаем бизнес и приводим клиентов.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="#packages" class="btn-primary"><i data-lucide="package" style="width:18px;height:18px"></i> Выбрать пакет</a>
+            <a href="#form" class="btn-outline"><i data-lucide="send" style="width:18px;height:18px"></i> Оставить заявку</a>
+            <a href="#contacts" class="btn-outline" style="border-color:#6366f1;color:#6366f1"><i data-lucide="message-circle" style="width:18px;height:18px"></i> Консультация</a>
+          </div>
+        </div>
+        <div class="flex-1 flex justify-center fade-up">
+          <div class="hero-graphic">
+            <svg viewBox="0 0 480 400" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full float-anim">
+              <rect x="40" y="80" width="400" height="260" rx="24" fill="#f0f5ff" stroke="#1a6cfa" stroke-width="2" />
+              <rect x="70" y="120" width="100" height="140" rx="8" fill="#1a6cfa" opacity=".15" />
+              <rect x="70" y="200" width="100" height="60" rx="8" fill="#1a6cfa" opacity=".5" />
+              <rect x="190" y="160" width="100" height="100" rx="8" fill="#1a6cfa" opacity=".25" />
+              <rect x="190" y="200" width="100" height="60" rx="8" fill="#1a6cfa" opacity=".7" />
+              <rect x="310" y="140" width="100" height="120" rx="8" fill="#1a6cfa" opacity=".2" />
+              <rect x="310" y="180" width="100" height="80" rx="8" fill="#1a6cfa" opacity=".6" />
+              <circle cx="120" cy="112" r="6" fill="#1a6cfa" />
+              <circle cx="240" cy="152" r="6" fill="#1a6cfa" />
+              <circle cx="360" cy="132" r="6" fill="#1a6cfa" />
+              <path d="M120 112 L240 152 L360 132" stroke="#1a6cfa" stroke-width="2.5" stroke-linecap="round" fill="none" />
+              <circle cx="380" cy="60" r="30" fill="#1a6cfa" opacity=".1" />
+              <path d="M370 60 L380 50 L390 65 L375 55" stroke="#1a6cfa" stroke-width="2" fill="none" stroke-linecap="round" />
+              <text x="240" y="370" text-anchor="middle" fill="#1a6cfa" font-size="14" font-weight="700" font-family="Manrope">ANALYTICS DASHBOARD</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advantages -->
+      <div class="max-w-7xl mx-auto mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 text-center card-hover shadow-sm border border-gray-100 fade-up">
+          <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="trending-up" style="color:#1a6cfa;width:28px;height:28px"></i>
+          </div>
+          <p class="font-bold text-sm">Рост продаж</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 text-center card-hover shadow-sm border border-gray-100 fade-up">
+          <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="users" style="color:#1a6cfa;width:28px;height:28px"></i>
+          </div>
+          <p class="font-bold text-sm">Профессиональная команда</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 text-center card-hover shadow-sm border border-gray-100 fade-up">
+          <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="clock" style="color:#1a6cfa;width:28px;height:28px"></i>
+          </div>
+          <p class="font-bold text-sm">Экономия времени</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 text-center card-hover shadow-sm border border-gray-100 fade-up">
+          <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+            <i data-lucide="bar-chart-2" style="color:#1a6cfa;width:28px;height:28px"></i>
+          </div>
+          <p class="font-bold text-sm">Прозрачная аналитика</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="w-full py-20 px-6 bg-surface">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Что мы делаем</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Наши услуги</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl p-8 card-hover border border-gray-100 fade-up">
+            <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mb-5">
+              <i data-lucide="briefcase" style="color:#1a6cfa;width:28px;height:28px"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Маркетинговый отдел</h3>
+            <p class="text-gray-500 text-sm mb-5">Полное управление маркетинговыми процессами вашего бизнеса.</p>
+            <a href="#packages" class="text-brand font-semibold text-sm hover:underline">Подробнее →</a>
+          </div>
+          <div class="bg-white rounded-2xl p-8 card-hover border border-gray-100 fade-up">
+            <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mb-5">
+              <i data-lucide="camera" style="color:#1a6cfa;width:28px;height:28px"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Мобилография</h3>
+            <p class="text-gray-500 text-sm mb-5">Профессиональная съёмка на мобильные устройства для соцсетей.</p>
+            <a href="#packages" class="text-brand font-semibold text-sm hover:underline">Подробнее →</a>
+          </div>
+          <div class="bg-white rounded-2xl p-8 card-hover border border-gray-100 fade-up">
+            <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mb-5">
+              <i data-lucide="target" style="color:#1a6cfa;width:28px;height:28px"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Таргет</h3>
+            <p class="text-gray-500 text-sm mb-5">Настройка и ведение таргетированной рекламы с результатом.</p>
+            <a href="#packages" class="text-brand font-semibold text-sm hover:underline">Подробнее →</a>
+          </div>
+          <div class="bg-white rounded-2xl p-8 card-hover border border-gray-100 fade-up">
+            <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mb-5">
+              <i data-lucide="file-text" style="color:#1a6cfa;width:28px;height:28px"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Контент и сценарии</h3>
+            <p class="text-gray-500 text-sm mb-5">Создание контент-планов, сценариев и текстов для публикаций.</p>
+            <a href="#packages" class="text-brand font-semibold text-sm hover:underline">Подробнее →</a>
+          </div>
+          <div class="bg-white rounded-2xl p-8 card-hover border border-gray-100 fade-up">
+            <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mb-5">
+              <i data-lucide="palette" style="color:#1a6cfa;width:28px;height:28px"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Дизайн</h3>
+            <p class="text-gray-500 text-sm mb-5">Графический дизайн постов, баннеров и визуального контента.</p>
+            <a href="#packages" class="text-brand font-semibold text-sm hover:underline">Подробнее →</a>
+          </div>
+          <div class="bg-white rounded-2xl p-8 card-hover border border-gray-100 fade-up">
+            <div class="w-14 h-14 rounded-xl bg-brand/10 flex items-center justify-center mb-5">
+              <i data-lucide="smartphone" style="color:#1a6cfa;width:28px;height:28px"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Сторисмейкинг</h3>
+            <p class="text-gray-500 text-sm mb-5">Создание вовлекающих Stories для Instagram и других платформ.</p>
+            <a href="#packages" class="text-brand font-semibold text-sm hover:underline">Подробнее →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Packages -->
+    <section id="packages" class="w-full py-20 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Тарифы</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Пакеты услуг</h2>
+        </div>
+
+        <h3 class="text-xl font-bold mb-6 fade-up">Одноразовые услуги</h3>
+        <div class="grid md:grid-cols-2 gap-6 mb-14">
+          <div class="bg-surface rounded-2xl p-8 border border-gray-100 card-hover fade-up">
+            <h4 class="font-bold text-lg mb-1">Базовый</h4>
+            <p class="text-3xl font-extrabold text-brand mb-4">12 500 <span class="text-base font-medium text-gray-400">сом</span></p>
+            <ul class="space-y-2 text-sm text-gray-600 mb-6">
+              <li class="flex justify-between"><span>Амбассадор</span><span class="font-semibold">1 500</span></li>
+              <li class="flex justify-between"><span>Мобилограф</span><span class="font-semibold">2 500</span></li>
+              <li class="flex justify-between"><span>Отдел маркетинга</span><span class="font-semibold">2 000</span></li>
+              <li class="flex justify-between"><span>Менеджер проекта</span><span class="font-semibold">1 500</span></li>
+              <li class="flex justify-between"><span>Таргетолог</span><span class="font-semibold">2 000</span></li>
+              <li class="flex justify-between"><span>Монтаж и постпродакшн</span><span class="font-semibold">3 000</span></li>
+            </ul>
+            <a href="#form" class="btn-primary w-full justify-center text-sm">Выбрать пакет</a>
+          </div>
+          <div class="bg-surface rounded-2xl p-8 border border-gray-100 card-hover fade-up">
+            <h4 class="font-bold text-lg mb-1">Продвинутый</h4>
+            <p class="text-3xl font-extrabold text-brand mb-4">15 000 <span class="text-base font-medium text-gray-400">сом</span></p>
+            <ul class="space-y-2 text-sm text-gray-600 mb-6">
+              <li class="flex justify-between"><span>Амбассадор</span><span class="font-semibold">1 500</span></li>
+              <li class="flex justify-between"><span>Мобилограф</span><span class="font-semibold">4 000</span></li>
+              <li class="flex justify-between"><span>Отдел маркетинга</span><span class="font-semibold">2 500</span></li>
+              <li class="flex justify-between"><span>Менеджер проекта</span><span class="font-semibold">2 000</span></li>
+              <li class="flex justify-between"><span>Таргетолог</span><span class="font-semibold">2 000</span></li>
+              <li class="flex justify-between"><span>Монтаж и постпродакшн</span><span class="font-semibold">3 000</span></li>
+            </ul>
+            <a href="#form" class="btn-primary w-full justify-center text-sm">Выбрать пакет</a>
+          </div>
+        </div>
+
+        <h3 class="text-xl font-bold mb-6 fade-up">Месячные пакеты</h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-surface rounded-2xl p-8 border border-gray-100 card-hover fade-up">
+            <h4 class="font-bold text-lg mb-1">Стандарт</h4>
+            <p class="text-sm text-gray-400 mb-2">7 видео в месяц</p>
+            <p class="text-3xl font-extrabold text-brand mb-4">65 000 <span class="text-base font-medium text-gray-400">сом</span></p>
+            <ul class="space-y-2 text-sm text-gray-600 mb-6">
+              <li class="flex justify-between"><span>Отдел маркетинга</span><span class="font-semibold">20 000</span></li>
+              <li class="flex justify-between"><span>Мобилограф</span><span class="font-semibold">15 000</span></li>
+              <li class="flex justify-between"><span>Амбассадор</span><span class="font-semibold">10 000</span></li>
+              <li class="flex justify-between"><span>Таргетолог</span><span class="font-semibold">7 000</span></li>
+              <li class="flex justify-between"><span>Менеджер проекта</span><span class="font-semibold">6 000</span></li>
+              <li class="flex justify-between"><span>Контент и сценарии</span><span class="font-semibold">7 000</span></li>
+            </ul>
+            <a href="#form" class="btn-primary w-full justify-center text-sm">Выбрать пакет</a>
+          </div>
+          <div class="bg-gradient-to-br from-brand to-indigo-500 rounded-2xl p-8 text-white card-hover relative fade-up">
+            <div class="popular-badge">⭐ Популярный</div>
+            <h4 class="font-bold text-lg mb-1 mt-2">Расширенный</h4>
+            <p class="text-sm text-blue-100 mb-2">7 видео в месяц</p>
+            <p class="text-3xl font-extrabold mb-4">85 000 <span class="text-base font-medium text-blue-200">сом</span></p>
+            <p class="text-sm text-blue-100 mb-2 font-semibold">Всё из тарифа 65 000 +</p>
+            <ul class="space-y-2 text-sm text-blue-100 mb-6">
+              <li class="flex justify-between"><span>Сторисмейкер</span><span class="font-semibold text-white">10 000</span></li>
+              <li class="flex justify-between"><span>Графический дизайнер (до 10 постов)</span><span class="font-semibold text-white">10 000</span></li>
+            </ul>
+            <a href="#form" class="bg-white text-brand font-semibold rounded-xl px-6 py-3 inline-flex items-center gap-2 hover:shadow-lg transition w-full justify-center text-sm">Выбрать пакет</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Us -->
+    <section class="w-full py-20 px-6 bg-surface">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Преимущества</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Почему выбирают нас</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="award" style="color:#1a6cfa;width:30px;height:30px"></i>
+            </div>
+            <p class="font-bold text-sm">Опытная команда</p>
+          </div>
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="bar-chart" style="color:#1a6cfa;width:30px;height:30px"></i>
+            </div>
+            <p class="font-bold text-sm">Измеримый результат</p>
+          </div>
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="check-circle" style="color:#1a6cfa;width:30px;height:30px"></i>
+            </div>
+            <p class="font-bold text-sm">Соблюдение сроков</p>
+          </div>
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="heart" style="color:#1a6cfa;width:30px;height:30px"></i>
+            </div>
+            <p class="font-bold text-sm">Индивидуальный подход</p>
+          </div>
+          <div class="text-center fade-up col-span-2 md:col-span-1">
+            <div class="w-16 h-16 rounded-2xl bg-brand/10 flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="file-text" style="color:#1a6cfa;width:30px;height:30px"></i>
+            </div>
+            <p class="font-bold text-sm">Отчетность и аналитика</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How We Work -->
+    <section class="w-full py-20 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Процесс</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Как мы работаем</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center mx-auto mb-4 text-xl font-extrabold">1</div>
+            <p class="font-bold text-sm">Обсуждение</p>
+          </div>
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center mx-auto mb-4 text-xl font-extrabold">2</div>
+            <p class="font-bold text-sm">Стратегия</p>
+          </div>
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center mx-auto mb-4 text-xl font-extrabold">3</div>
+            <p class="font-bold text-sm">Создание контента</p>
+          </div>
+          <div class="text-center fade-up">
+            <div class="w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center mx-auto mb-4 text-xl font-extrabold">4</div>
+            <p class="font-bold text-sm">Продвижение</p>
+          </div>
+          <div class="text-center fade-up col-span-2 md:col-span-1">
+            <div class="w-16 h-16 rounded-full bg-brand text-white flex items-center justify-center mx-auto mb-4 text-xl font-extrabold">5</div>
+            <p class="font-bold text-sm">Аналитика</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cases -->
+    <section id="cases" class="w-full py-20 px-6 bg-surface">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Результаты</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Кейсы</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl p-8 text-center card-hover border border-gray-100 fade-up">
+            <div class="text-4xl font-extrabold text-brand mb-2">+320%</div>
+            <p class="text-gray-500 font-medium">Рост охвата в Instagram за 3 месяца</p>
+          </div>
+          <div class="bg-white rounded-2xl p-8 text-center card-hover border border-gray-100 fade-up">
+            <div class="text-4xl font-extrabold text-brand mb-2">1 200+</div>
+            <p class="text-gray-500 font-medium">Лидов привлечено за квартал</p>
+          </div>
+          <div class="bg-white rounded-2xl p-8 text-center card-hover border border-gray-100 fade-up">
+            <div class="text-4xl font-extrabold text-brand mb-2">x4</div>
+            <p class="text-gray-500 font-medium">Рост продаж после запуска рекламы</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="reviews" class="w-full py-20 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Отзывы</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Что говорят клиенты</h2>
+        </div>
+        
+        <div class="relative overflow-hidden mb-8 fade-up">
+          <div id="reviewTrack" class="review-track"></div>
+          <div class="flex justify-center gap-3 mt-8">
+            <button id="prevReview" class="w-12 h-12 rounded-full bg-surface border border-gray-200 flex items-center justify-center hover:bg-brand hover:text-white hover:border-brand transition">
+              <i data-lucide="chevron-left" style="width:20px;height:20px"></i>
+            </button>
+            <button id="nextReview" class="w-12 h-12 rounded-full bg-surface border border-gray-200 flex items-center justify-center hover:bg-brand hover:text-white hover:border-brand transition">
+              <i data-lucide="chevron-right" style="width:20px;height:20px"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Review Form -->
+        <div class="max-w-xl mx-auto bg-surface rounded-2xl p-8 border border-gray-100 fade-up">
+          <h3 class="text-xl font-bold mb-6 text-center">Оставить отзыв</h3>
+          <form id="reviewForm" class="space-y-4">
+            <div>
+              <label for="revName" class="block text-sm font-medium mb-1">Ваше имя</label>
+              <input id="revName" type="text" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition text-sm" placeholder="Имя">
+            </div>
+            <div>
+              <label for="revText" class="block text-sm font-medium mb-1">Ваш отзыв</label>
+              <textarea id="revText" rows="3" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition text-sm resize-none" placeholder="Расскажите о вашем опыте"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Рейтинг</label>
+              <div id="starPicker" class="flex gap-1"></div>
+            </div>
+            <button type="submit" id="reviewSubmitBtn" class="btn-primary w-full justify-center">Отправить отзыв</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts" class="w-full py-20 px-6 bg-surface">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-14 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Контакты</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Свяжитесь с нами</h2>
+        </div>
+        <div class="flex flex-col md:flex-row gap-6 justify-center items-stretch max-w-2xl mx-auto">
+          <a href="https://wa.me/996504532001" target="_blank" rel="noopener noreferrer" class="flex-1 bg-green-500 hover:bg-green-600 text-white rounded-2xl p-8 text-center font-bold text-lg transition card-hover fade-up">
+            <div class="text-4xl mb-3">💬</div>
+            Написать в WhatsApp
+            <p class="text-sm font-normal mt-2 text-green-100">+996 504 532 001</p>
+          </a>
+          <a href="https://www.instagram.com/smm_kadr" target="_blank" rel="noopener noreferrer" class="flex-1 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 hover:opacity-90 text-white rounded-2xl p-8 text-center font-bold text-lg transition card-hover fade-up">
+            <div class="text-4xl mb-3">📸</div>
+            Перейти в Instagram
+            <p class="text-sm font-normal mt-2 text-white/80">@smm_kadr</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Application Form -->
+    <section id="form" class="w-full py-20 px-6 bg-white">
+      <div class="max-w-xl mx-auto">
+        <div class="text-center mb-10 fade-up">
+          <p class="text-brand font-semibold text-sm mb-2 uppercase tracking-widest">Заявка</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold">Получить консультацию</h2>
+        </div>
+        <form id="contactForm" class="bg-surface rounded-2xl p-8 border border-gray-100 space-y-4 fade-up">
+          <div>
+            <label for="cfName" class="block text-sm font-medium mb-1">Имя</label>
+            <input id="cfName" type="text" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition text-sm" placeholder="Ваше имя">
+          </div>
+          <div>
+            <label for="cfPhone" class="block text-sm font-medium mb-1">Телефон</label>
+            <input id="cfPhone" type="tel" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition text-sm" placeholder="+996 ...">
+          </div>
+          <div>
+            <label for="cfMsg" class="block text-sm font-medium mb-1">Сообщение</label>
+            <textarea id="cfMsg" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition text-sm resize-none" placeholder="Расскажите о вашем проекте"></textarea>
+          </div>
+          <button type="submit" id="contactSubmitBtn" class="btn-primary w-full justify-center">Получить консультацию</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="w-full py-20 px-6 bg-gradient-to-br from-brand to-indigo-600">
+      <div class="max-w-3xl mx-auto text-center fade-up">
+        <h2 id="ctaTitle" class="text-3xl md:text-4xl font-extrabold text-white mb-6">Готовы вывести бизнес на новый уровень?</h2>
+        <a href="#form" class="bg-white text-brand font-bold rounded-xl px-10 py-4 text-lg hover:shadow-2xl transition inline-flex items-center gap-3">
+          <i data-lucide="rocket" style="width:22px;height:22px"></i> Оставить заявку
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full bg-dark text-gray-400 py-12 px-6">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+        <div>
+          <p class="text-xl font-extrabold text-white mb-2">СММ_КАДР</p>
+          <p class="text-sm">Комплексный маркетинг для бизнеса</p>
+        </div>
+        <div class="flex flex-wrap gap-6 text-sm font-medium">
+          <a href="#services" class="hover:text-white transition">Услуги</a>
+          <a href="#packages" class="hover:text-white transition">Пакеты</a>
+          <a href="#cases" class="hover:text-white transition">Кейсы</a>
+          <a href="#reviews" class="hover:text-white transition">Отзывы</a>
+          <a href="#contacts" class="hover:text-white transition">Контакты</a>
+        </div>
+        <div class="flex gap-4">
+          <a href="https://wa.me/996504532001" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-green-500 transition">
+            <i data-lucide="message-circle" style="width:18px;height:18px;color:white"></i>
+          </a>
+          <a href="https://www.instagram.com/smm_kadr" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-500 transition">
+            <i data-lucide="instagram" style="width:18px;height:18px;color:white"></i>
+          </a>
+        </div>
+      </div>
+      <div class="max-w-7xl mx-auto mt-8 pt-6 border-t border-white/10 text-center text-xs text-gray-500">
+        © 2025 СММ_КАДР. Все права защищены.
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Default config
+    const defaultConfig = {
+      hero_title: 'Комплексный маркетинг для роста вашего бренда',
+      hero_subtitle: 'Создаем контент, продвигаем бизнес и приводим клиентов.',
+      cta_title: 'Готовы вывести бизнес на новый уровень?',
+      background_color: '#ffffff',
+      surface_color: '#f7f9fc',
+      text_color: '#0d1117',
+      primary_action_color: '#1a6cfa',
+      secondary_action_color: '#6366f1',
+      font_family: 'Manrope',
+      font_size: 16
+    };
+
+    const staticReviews = [
+      {name:'Айгуль К.', biz:'Салон красоты', text:'После работы с СММ_КАДР вырос поток заявок в 3 раза. Рекомендую всем!', rating:5},
+      {name:'Бакыт М.', biz:'Ресторан', text:'Контент и реклама дали отличный результат. Заполняемость выросла.', rating:5},
+      {name:'Нурай Т.', biz:'Магазин одежды', text:'Сильная команда и понятная аналитика. Всё прозрачно и по делу.', rating:5},
+      {name:'Эрмек А.', biz:'Фитнес-клуб', text:'Привлекли более 200 новых клиентов за первый месяц работы.', rating:5},
+    ];
+
+    let allReviews = [...staticReviews];
+    let currentSlide = 0;
+    let pickedRating = 5;
+    let currentRecordCount = 0;
+
+    // Render Reviews
+    function renderReviews() {
+      const track = document.getElementById('reviewTrack');
+      track.innerHTML = '';
+      allReviews.forEach(r => {
+        const initials = r.name.split(' ').map(w => w[0]).join('').toUpperCase();
+        const stars = '⭐'.repeat(r.rating);
+        const card = document.createElement('div');
+        card.className = 'min-w-[300px] md:min-w-[360px] bg-surface rounded-2xl p-6 border border-gray-100 flex-shrink-0';
+        card.innerHTML = `
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand font-bold">${initials}</div>
+            <div><p class="font-bold text-sm">${r.name}</p><p class="text-xs text-gray-400">${r.biz}</p></div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">"${r.text}"</p>
+          <p class="text-sm">${stars}</p>
+        `;
+        track.appendChild(card);
+      });
+      slideReviews();
+    }
+
+    function slideReviews() {
+      const track = document.getElementById('reviewTrack');
+      const card = track.children[0];
+      if (!card) return;
+      const w = card.offsetWidth + 24;
+      track.style.transform = `translateX(-${currentSlide * w}px)`;
+    }
+
+    // Star Picker
+    function createStarPicker() {
+      const starPicker = document.getElementById('starPicker');
+      starPicker.innerHTML = '';
+      for (let i = 1; i <= 5; i++) {
+        const s = document.createElement('span');
+        s.className = 'star-btn text-2xl cursor-pointer';
+        s.textContent = '⭐';
+        s.dataset.val = i;
+        s.addEventListener('click', () => {
+          pickedRating = i;
+          updateStars();
+        });
+        starPicker.appendChild(s);
+      }
+      updateStars();
+    }
+
+    function updateStars() {
+      const stars = document.querySelectorAll('#starPicker span');
+      stars.forEach((s, idx) => {
+        s.style.opacity = idx < pickedRating ? 1 : 0.3;
+      });
+    }
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // Forms
+    document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('reviewSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Отправка...';
+
+      showToast('Спасибо за отзыв! ✨');
+      e.target.reset();
+      pickedRating = 5;
+      updateStars();
+
+      btn.disabled = false;
+      btn.textContent = 'Отправить отзыв';
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('contactSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Отправка...';
+
+      showToast('Заявка отправлена! Мы свяжемся с вами 🎯');
+      e.target.reset();
+
+      btn.disabled = false;
+      btn.textContent = 'Получить консультацию';
+    });
+
+    // Mobile Menu
+    document.getElementById('mobMenuBtn').addEventListener('click', () => {
+      document.getElementById('mobMenu').classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('.mob-nav').forEach(link => {
+      link.addEventListener('click', () => {
+        document.getElementById('mobMenu').classList.add('hidden');
+      });
+    });
+
+    // Slider buttons
+    document.getElementById('prevReview').addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        slideReviews();
+      }
+    });
+
+    document.getElementById('nextReview').addEventListener('click', () => {
+      if (currentSlide < allReviews.length - 1) {
+        currentSlide++;
+        slideReviews();
+      }
+    });
+
+    // Scroll animations
+    function initScrollAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    }
+
+    // Initialize everything
+    function initialize() {
+      renderReviews();
+      createStarPicker();
+      initScrollAnimations();
+      lucide.createIcons();
+    }
+
+    // Run when page loads
+    window.addEventListener('load', initialize);
+  </script>
+</body>
+</html>
